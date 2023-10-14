@@ -4,7 +4,7 @@ defmodule Inter.MixProject do
   def project do
     [
       app: :inter,
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       name: "Inter",
@@ -35,7 +35,7 @@ defmodule Inter.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:poison, "~> 5.0"},
+      {:poison, ">= 3.0.0 and <= 6.0.0"},
       {:httpoison, "~> 2.1"},
       {:nestru, "~> 0.3.3"},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false}
