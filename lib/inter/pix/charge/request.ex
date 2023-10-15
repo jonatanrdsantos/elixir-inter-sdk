@@ -7,11 +7,13 @@ defmodule Inter.Pix.Charge.Request do
            hint: %{
              calendario: Inter.Pix.Charge.Request.Calendario,
              devedor: Inter.Pix.Charge.Request.Devedor,
-             valor: Inter.Pix.Charge.Request.Valor
+             valor: Inter.Pix.Charge.Request.Valor,
+             infoAdicionais: [Inter.Pix.Charge.Request.InfoAdicional]
            }}
   @derive Nestru.Encoder
   defstruct calendario: nil,
             devedor: nil,
             valor: nil,
-            chave: nil
+            chave: nil,
+            infoAdicionais: []
 end
