@@ -37,12 +37,32 @@ pix_charge_request = %Inter.Pix.Charge.Request{
     original: "5.00", 
     modalidadeAlteracao: 1
   },
+  infoAdicionais: [
+    %Inter.Pix.Charge.Request.InfoAdicional{
+      nome: "meu campo adicional", 
+      valor: "algum valor 🤩"
+    },
+    %Inter.Pix.Charge.Request.InfoAdicional{
+      nome: "meu campo adicional", 
+      valor: "algum valor 🤩"
+    },
+    %Inter.Pix.Charge.Request.InfoAdicional{
+      nome: "meu campo adicional", 
+      valor: "algum valor 🤩"
+    },
+  ],
   chave: "46650032907724"
 }
 
 Inter.Client.new(client_id, client_secret, scope, grant_type, api_cert, api_key)
  |> Inter.pix_charge(pix_charge_request)
 ```
+
+**How to run locally?**
+
+- `docker-compose run --rm app bash`
+  - `mix deps.get` to install the dependencies
+  - `iex -S mix` to open the elixir REPL
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
