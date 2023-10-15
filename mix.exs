@@ -36,6 +36,7 @@ defmodule Inter.MixProject do
   defp deps do
     [
       {:poison, ">= 3.0.0 and <= 6.0.0"},
+      {:jason, "~> 1.2"},
       {:httpoison, "~> 2.1"},
       {:nestru, "~> 0.3.3"},
       {:eqrcode, "~> 0.1.10"},

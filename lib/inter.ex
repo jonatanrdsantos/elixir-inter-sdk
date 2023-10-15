@@ -26,4 +26,11 @@ defmodule Inter do
         nil
     end
   end
+  
+  def qr_quote(%Inter.Client{} = client) do
+    case client.response do
+      nuk -> 
+    end
+    |> Inter.Client.token()
+  end
 end

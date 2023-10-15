@@ -72,7 +72,7 @@ defmodule Inter.Client do
 
     %__MODULE__{
       client
-      | token: handle_response(response, %Inter.Token{})
+      | token: handle_response(response, Inter.Token)
     }
   end
 
@@ -85,7 +85,7 @@ defmodule Inter.Client do
     response =
       HTTPoison.post(
         client.base_url <> "pix/v2/cob",
-        Poison.encode!(request),
+        Poison.encode!(request |> Nestru.encode_to_map!()),
         headers,
         client.request_options
       )
@@ -93,15 +93,15 @@ defmodule Inter.Client do
     %__MODULE__{
       client
       | request: request,
-        response: handle_response(response, %Inter.Pix.Charge.Response{})
+        response: handle_response(response, Inter.Pix.Charge.Response)
     }
   end
 
   defp handle_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}, type),
-    do: body |> Poison.decode!(as: type)
+    do: body |> Jason.decode!()  |> Nestru.decode_from_map!(type)
 
   defp handle_response({:ok, %HTTPoison.Response{status_code: 201, body: body}}, type),
-    do: body |> Poison.decode!(as: type)
+    do: body |> Jason.decode!()  |> Nestru.decode_from_map!(type)
 
   defp handle_response(response, _type), do: {:error, "Failed to obtain OAuth token", response}
 end
