@@ -88,7 +88,7 @@ defmodule Inter.Client do
         Poison.encode!(request),
         headers,
         client.request_options
-      ) |> dbg()
+      )
 
     %__MODULE__{
       client
@@ -104,12 +104,4 @@ defmodule Inter.Client do
     do: body |> Poison.decode!(as: type)
 
   defp handle_response(response, _type), do: {:error, "Failed to obtain OAuth token", response}
-
-  defp handle_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}),
-    do: body |> Poison.decode!()
-
-  defp handle_response({:ok, %HTTPoison.Response{status_code: 201, body: body}}),
-    do: body |> Poison.decode!()
-
-  defp handle_response(response), do: {:error, "Failed to obtain OAuth token", response}
 end

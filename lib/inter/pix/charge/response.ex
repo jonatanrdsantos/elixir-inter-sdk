@@ -19,5 +19,6 @@ defmodule Inter.Pix.Charge.Response do
             calendario: %Inter.Pix.Charge.Response.Calendario{},
             txid: nil,
             revisao: nil,
-            devedor: %Inter.Pix.Charge.Response.Devedor{}
+            devedor: %Inter.Pix.Charge.Response.Devedor{},
+            qr_code: nil
 end
