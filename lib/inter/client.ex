@@ -7,7 +7,7 @@ defmodule Inter.Client do
             client_id: nil,
             client_secret: nil,
             scope: nil,
-            grant_type: nil,
+            grant_type: "client_credentials",
             cert_file: nil,
             key_file: nil,
             token: nil,
