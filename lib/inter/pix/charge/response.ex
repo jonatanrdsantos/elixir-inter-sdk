@@ -10,8 +10,8 @@ defmodule Inter.Pix.Charge.Response do
              devedor: Inter.Pix.Charge.Response.Devedor
            }}
   defstruct chave: nil,
-            info_adicionais: [],
-            pix_copia_e_cola: nil,
+            infoAdicionais: [],
+            pixCopiaECola: nil,
             loc: %Inter.Pix.Charge.Response.Loc{},
             location: nil,
             status: nil,

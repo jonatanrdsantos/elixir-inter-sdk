@@ -88,7 +88,7 @@ defmodule Inter.Client do
         Poison.encode!(request),
         headers,
         client.request_options
-      )
+      ) |> dbg()
 
     %__MODULE__{
       client

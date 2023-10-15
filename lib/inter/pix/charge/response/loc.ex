@@ -4,6 +4,6 @@ defmodule Inter.Pix.Charge.Response.Loc do
   """
   defstruct id: nil,
             location: nil,
-            tipo_cob: nil,
+            tipoCob: nil,
             criacao: nil
 end
