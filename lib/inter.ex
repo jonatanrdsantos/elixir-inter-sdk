@@ -18,19 +18,12 @@ defmodule Inter do
           client
           | response: %Inter.Pix.Charge.Response{
               client.response
-              | qr_code: Generator.generate(response.pixCopiaECola, :svg)
+              | qrCode: Generator.generate(response.pixCopiaECola, :svg)
             }
         }
 
       nil ->
         nil
     end
-  end
-  
-  def qr_quote(%Inter.Client{} = client) do
-    case client.response do
-      nuk -> 
-    end
-    |> Inter.Client.token()
   end
 end
