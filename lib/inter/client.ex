@@ -98,10 +98,10 @@ defmodule Inter.Client do
   end
 
   defp handle_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}, type),
-    do: body |> Jason.decode!()  |> Nestru.decode_from_map!(type)
+    do: body |> Jason.decode!() |> Nestru.decode_from_map!(type)
 
   defp handle_response({:ok, %HTTPoison.Response{status_code: 201, body: body}}, type),
-    do: body |> Jason.decode!()  |> Nestru.decode_from_map!(type)
+    do: body |> Jason.decode!() |> Nestru.decode_from_map!(type)
 
   defp handle_response(response, _type), do: {:error, "Failed to obtain OAuth token", response}
 end
