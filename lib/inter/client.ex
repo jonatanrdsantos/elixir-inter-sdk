@@ -97,11 +97,34 @@ defmodule Inter.Client do
     }
   end
 
+  def get_pix(%__MODULE__{} = client, txid) do
+    headers = [
+      {"Content-Type", "application/json"},
+      {"Authorization", "Bearer " <> client.token.access_token}
+    ]
+
+    response =
+      HTTPoison.get(
+        client.base_url <> "pix/v2/cob/#{txid}",
+        headers,
+        client.request_options
+      )
+
+    %__MODULE__{
+      client
+      | request: %{},
+        response: handle_response(response, Inter.Pix.Charge.Response)
+    }
+  end
+
   defp handle_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}, type),
     do: body |> Jason.decode!() |> Nestru.decode_from_map!(type)
 
   defp handle_response({:ok, %HTTPoison.Response{status_code: 201, body: body}}, type),
     do: body |> Jason.decode!() |> Nestru.decode_from_map!(type)
+
+  defp handle_response({:ok, %HTTPoison.Response{status_code: 403, body: body} = response}, _type),
+       do: {:error, body, response}
 
   defp handle_response(response, _type), do: {:error, "Failed to obtain OAuth token", response}
 end

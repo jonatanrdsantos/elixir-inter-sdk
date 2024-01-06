@@ -11,6 +11,12 @@ defmodule Inter do
     |> Inter.Client.pix_charge(request)
   end
 
+  def get_pix(%Inter.Client{} = client, txid) do
+    case txid do
+      _ -> client |> Inter.Client.get_pix(txid)
+    end
+  end
+
   def pix_qr_code(%Inter.Client{} = client) do
     case client.response do
       %Inter.Pix.Charge.Response{} = response ->
