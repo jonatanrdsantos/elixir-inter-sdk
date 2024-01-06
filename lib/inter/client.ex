@@ -13,6 +13,7 @@ defmodule Inter.Client do
             token: nil,
             request: nil,
             request_options: nil,
+            last_token_request_time: nil,
             response: nil
 
   @doc """
@@ -48,11 +49,12 @@ defmodule Inter.Client do
           cert: cert_file |> :public_key.pem_decode() |> hd() |> elem(1),
           key: {type, encoded}
         ]
-      ]
+      ],
+      last_token_request_time: nil
     }
   end
 
-  def token(%__MODULE__{} = client) do
+  def token(%__MODULE__{token: token} = client) when is_nil(token) do
     data = [
       {"client_id", client.client_id},
       {"client_secret", client.client_secret},
@@ -72,9 +74,19 @@ defmodule Inter.Client do
 
     %__MODULE__{
       client
-      | token: handle_response(response, Inter.Token)
+      | token: handle_response(response, Inter.Token),
+        last_token_request_time: DateTime.utc_now()
     }
   end
+
+  def token(%__MODULE__{} = client) do
+    case token_expired?(client) do
+      true -> %__MODULE__{client| token: nil} |> token()
+      false -> client
+    end
+  end
+
+  defp token_expired?(client), do: DateTime.diff(DateTime.utc_now(), client.last_token_request_time) > 3600 |> dbg()
 
   def pix_charge(%__MODULE__{} = client, %Inter.Pix.Charge.Request{} = request) do
     headers = [
