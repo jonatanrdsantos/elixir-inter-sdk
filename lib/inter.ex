@@ -13,7 +13,7 @@ defmodule Inter do
 
   def get_pix(%Inter.Client{} = client, txid) do
     case txid do
-      _ -> client |> Inter.Client.get_pix(txid)
+      _ -> client |> Inter.Client.token() |> Inter.Client.get_pix(txid)
     end
   end
 
