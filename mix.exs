@@ -4,7 +4,7 @@ defmodule Inter.MixProject do
   def project do
     [
       app: :inter,
-      version: "0.3.2",
+      version: "0.4.0",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       name: "Inter",
