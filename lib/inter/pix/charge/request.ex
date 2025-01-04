@@ -3,7 +3,6 @@ defmodule Inter.Pix.Charge.Request do
   Documentation for `Inter.Pix.Charge.Request`.
   """
 
-  @derive
   @derive [
     {Nestru.Encoder,
      hint: %{

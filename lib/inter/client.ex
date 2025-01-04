@@ -85,7 +85,7 @@ defmodule Inter.Client do
     response =
       HTTPoison.post(
         client.base_url <> "pix/v2/cob",
-        Poison.encode!(request |> Nestru.encode_to_map!()),
+        Poison.encode!(request |> Nestru.encode!()),
         headers,
         client.request_options
       )
@@ -118,12 +118,15 @@ defmodule Inter.Client do
   end
 
   defp handle_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}, type),
-    do: body |> Jason.decode!() |> Nestru.decode_from_map!(type)
+    do: body |> Jason.decode!() |> Nestru.decode!(type)
 
   defp handle_response({:ok, %HTTPoison.Response{status_code: 201, body: body}}, type),
-    do: body |> Jason.decode!() |> Nestru.decode_from_map!(type)
+    do: body |> Jason.decode!() |> Nestru.decode!(type)
 
-  defp handle_response({:ok, %HTTPoison.Response{status_code: 403, body: body} = response}, _type),
+  defp handle_response(
+         {:ok, %HTTPoison.Response{status_code: 403, body: body} = response},
+         _type
+       ),
        do: {:error, body, response}
 
   defp handle_response(response, _type), do: {:error, "Failed to obtain OAuth token", response}
