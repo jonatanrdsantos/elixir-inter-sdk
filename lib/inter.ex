@@ -17,6 +17,18 @@ defmodule Inter do
     end
   end
 
+  def cobranca_charge(%Inter.Client{} = client, %Inter.Cobranca.Charge.Request{} = request) do
+    client
+    |> Inter.Client.token()
+    |> Inter.Client.cobranca_charge(request)
+  end
+
+  def get_cobranca(%Inter.Client{} = client, cod) do
+    case cod do
+      _ -> client |> Inter.Client.token() |> Inter.Client.get_cobranca(cod)
+    end
+  end
+
   def pix_qr_code(%Inter.Client{} = client) do
     case client.response do
       %Inter.Pix.Charge.Response{} = response ->
