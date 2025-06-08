@@ -4,6 +4,11 @@ defmodule Inter.Cobranca.Charge.Response do
             boleto: nil,
             pix: nil
 
+  defmodule SimpleResponse do
+    @derive [Nestru.Encoder, Nestru.Decoder]
+    defstruct codigoSolicitacao: nil
+  end
+
   defmodule Cobranca do
     @derive [Nestru.Encoder, Nestru.Decoder]
     defstruct codigoSolicitacao: nil,

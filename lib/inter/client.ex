@@ -157,7 +157,7 @@ defmodule Inter.Client do
     %__MODULE__{
       client
       | request: request,
-        response: handle_response(response, Inter.Cobranca.Charge.Response)
+        response: handle_response(response, Inter.Cobranca.Charge.Response.SimpleResponse)
     }
   end
 
@@ -172,6 +172,9 @@ defmodule Inter.Client do
 
   defp handle_response({:ok, %HTTPoison.Response{status_code: 400, body: body}} = response, _type), \
     do: {:error, body |> Jason.decode!(), response}
+
+  defp handle_response({:ok, %HTTPoison.Response{status_code: 429}} = response, _type), \
+    do: {:error, "You've been rate-limited, try again later (429 error)", response}
 
   defp handle_response(response, _type), do: {:error, "Failed to obtain OAuth token", response}
 end

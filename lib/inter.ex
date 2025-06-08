@@ -23,9 +23,9 @@ defmodule Inter do
     |> Inter.Client.cobranca_charge(request)
   end
 
-  def get_cobranca(%Inter.Client{} = client, cod) do
+  def get_cobranca(%Inter.Client{} = client, cod, conta_corrente) do
     case cod do
-      _ -> client |> Inter.Client.token() |> Inter.Client.get_cobranca(cod)
+      _ -> client |> Inter.Client.token() |> Inter.Client.get_cobranca(cod, conta_corrente)
     end
   end
 
