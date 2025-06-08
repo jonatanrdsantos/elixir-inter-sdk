@@ -67,6 +67,7 @@ defmodule CobrancaTest do
 
     test "retrieves a cobranca", %{cod: cod, request: cobranca} do
       time = DateTime.utc_now() |> Calendar.strftime("%Y-%m-%d")
+
       client =
         Inter.Client.new(
           System.get_env("INTER_CLIENT_ID"),

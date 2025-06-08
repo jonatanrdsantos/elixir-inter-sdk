@@ -31,7 +31,15 @@ defmodule Inter.Client do
          key_file: "key_file"
        }
   """
-  def new(client_id, client_secret, scope, grant_type, cert_file, key_file, url \\ "https://cdpj.partners.bancointer.com.br/") do
+  def new(
+        client_id,
+        client_secret,
+        scope,
+        grant_type,
+        cert_file,
+        key_file,
+        url \\ "https://cdpj.partners.bancointer.com.br/"
+      ) do
     {type, encoded, _atom} = key_file |> :public_key.pem_decode() |> hd()
 
     %__MODULE__{
@@ -167,13 +175,19 @@ defmodule Inter.Client do
   defp handle_response({:ok, %HTTPoison.Response{status_code: 201, body: body}}, type),
     do: body |> Jason.decode!() |> Nestru.decode!(type)
 
-  defp handle_response({:ok, %HTTPoison.Response{status_code: 403, body: body} = response}, _type),
-    do: {:error, body, response}
+  defp handle_response(
+         {:ok, %HTTPoison.Response{status_code: 403, body: body} = response},
+         _type
+       ),
+       do: {:error, body, response}
 
-  defp handle_response({:ok, %HTTPoison.Response{status_code: 400, body: body}} = response, _type), \
-    do: {:error, body |> Jason.decode!(), response}
+  defp handle_response(
+         {:ok, %HTTPoison.Response{status_code: 400, body: body}} = response,
+         _type
+       ),
+       do: {:error, body |> Jason.decode!(), response}
 
-  defp handle_response({:ok, %HTTPoison.Response{status_code: 429}} = response, _type), \
+  defp handle_response({:ok, %HTTPoison.Response{status_code: 429}} = response, _type),
     do: {:error, "You've been rate-limited, try again later (429 error)", response}
 
   defp handle_response(response, _type), do: {:error, "Failed to obtain OAuth token", response}
