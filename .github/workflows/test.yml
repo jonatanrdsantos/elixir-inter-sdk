@@ -1,0 +1,43 @@
+name: Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        elixir-version: '1.15.7' # Set this to the version you use
+        otp-version: '26.2.1' # Set this to the version you use
+
+    - name: Restore dependencies cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          deps
+          _build
+        key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+        restore-keys: ${{ runner.os }}-mix-
+
+    - name: Install dependencies
+      run: mix deps.get
+
+    - name: Run tests
+      run: mix test
+      env:
+        # Add any environment variables your tests need here
+        INTER_CLIENT_ID: ${{ secrets.INTER_CLIENT_ID }}
+        INTER_CLIENT_SECRET: ${{ secrets.INTER_CLIENT_SECRET }}
+        INTER_SCOPE: ${{ secrets.INTER_SCOPE }}
+        INTER_API_CERT: ${{ secrets.INTER_API_CERT }}
+        INTER_API_KEY: ${{ secrets.INTER_API_KEY }} 

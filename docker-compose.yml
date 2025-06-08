@@ -6,3 +6,8 @@ services:
     command: "bash"
     volumes:
       - .:/app
+      - ./config/certificate.crt:/secrets/certificate.crt:ro
+      - ./config/certificate.key:/secrets/certificate.key:ro
+    entrypoint: ./entrypoint.sh
+    env_file: 
+      - .env

@@ -31,10 +31,19 @@ defmodule Inter.Client do
          key_file: "key_file"
        }
   """
-  def new(client_id, client_secret, scope, grant_type, cert_file, key_file) do
+  def new(
+        client_id,
+        client_secret,
+        scope,
+        grant_type,
+        cert_file,
+        key_file,
+        url \\ "https://cdpj.partners.bancointer.com.br/"
+      ) do
     {type, encoded, _atom} = key_file |> :public_key.pem_decode() |> hd()
 
     %__MODULE__{
+      base_url: url,
       client_id: client_id,
       client_secret: client_secret,
       scope: scope,
@@ -117,6 +126,49 @@ defmodule Inter.Client do
     }
   end
 
+  def get_cobranca(%__MODULE__{} = client, cod, conta_corrente) do
+    headers = [
+      {"Content-Type", "application/json"},
+      {"Authorization", "Bearer " <> client.token.access_token},
+      {"X-Conta-Corrente", conta_corrente}
+    ]
+
+    response =
+      HTTPoison.get(
+        client.base_url <> "cobranca/v3/cobrancas/#{cod}",
+        headers,
+        client.request_options
+      )
+
+    %__MODULE__{
+      client
+      | request: %{},
+        response: handle_response(response, Inter.Cobranca.Charge.Response)
+    }
+  end
+
+  def cobranca_charge(%__MODULE__{} = client, %Inter.Cobranca.Charge.Request{} = request) do
+    headers = [
+      {"Content-Type", "application/json"},
+      {"Authorization", "Bearer " <> client.token.access_token},
+      {"X-Conta-Corrente", request.contaCorrente}
+    ]
+
+    response =
+      HTTPoison.post(
+        client.base_url <> "cobranca/v3/cobrancas",
+        Poison.encode!(request |> Nestru.encode!()),
+        headers,
+        client.request_options
+      )
+
+    %__MODULE__{
+      client
+      | request: request,
+        response: handle_response(response, Inter.Cobranca.Charge.Response.SimpleResponse)
+    }
+  end
+
   defp handle_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}, type),
     do: body |> Jason.decode!() |> Nestru.decode!(type)
 
@@ -128,6 +180,15 @@ defmodule Inter.Client do
          _type
        ),
        do: {:error, body, response}
+
+  defp handle_response(
+         {:ok, %HTTPoison.Response{status_code: 400, body: body}} = response,
+         _type
+       ),
+       do: {:error, body |> Jason.decode!(), response}
+
+  defp handle_response({:ok, %HTTPoison.Response{status_code: 429}} = response, _type),
+    do: {:error, "You've been rate-limited, try again later (429 error)", response}
 
   defp handle_response(response, _type), do: {:error, "Failed to obtain OAuth token", response}
 end
