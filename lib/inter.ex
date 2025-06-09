@@ -1,31 +1,44 @@
 defmodule Inter do
   alias QRCode.Generator
+  require Logger
 
   @moduledoc """
   Documentation for `Inter`.
   """
 
+  def start_link do
+    Inter.TokenManager.start_link([])
+  end
+
   def pix_charge(%Inter.Client{} = client, %Inter.Pix.Charge.Request{} = request) do
-    client
-    |> Inter.Client.token()
-    |> Inter.Client.pix_charge(request)
+    with {:ok, token} <- get_token(client) do
+      client
+      |> Map.put(:token, token)
+      |> Inter.Client.pix_charge(request)
+    end
   end
 
   def get_pix(%Inter.Client{} = client, txid) do
-    case txid do
-      _ -> client |> Inter.Client.token() |> Inter.Client.get_pix(txid)
+    with {:ok, token} <- get_token(client) do
+      client
+      |> Map.put(:token, token)
+      |> Inter.Client.get_pix(txid)
     end
   end
 
   def cobranca_charge(%Inter.Client{} = client, %Inter.Cobranca.Charge.Request{} = request) do
-    client
-    |> Inter.Client.token()
-    |> Inter.Client.cobranca_charge(request)
+    with {:ok, token} <- get_token(client) do
+      client
+      |> Map.put(:token, token)
+      |> Inter.Client.cobranca_charge(request)
+    end
   end
 
   def get_cobranca(%Inter.Client{} = client, cod, conta_corrente) do
-    case cod do
-      _ -> client |> Inter.Client.token() |> Inter.Client.get_cobranca(cod, conta_corrente)
+    with {:ok, token} <- get_token(client) do
+      client
+      |> Map.put(:token, token)
+      |> Inter.Client.get_cobranca(cod, conta_corrente)
     end
   end
 
@@ -42,6 +55,13 @@ defmodule Inter do
 
       nil ->
         nil
+    end
+  end
+
+  defp get_token(client) do
+    case Inter.TokenManager.get_token(client) do
+      {:error, reason} -> {:error, reason}
+      token -> {:ok, token}
     end
   end
 end
