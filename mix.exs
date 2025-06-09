@@ -4,11 +4,11 @@ defmodule Inter.MixProject do
   def project do
     [
       app: :inter,
-      version: "0.4.0",
+      version: "0.5.0",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       name: "Inter",
-      description: "Inter API SDK",
+      description: "Banco Inter SDK (unofficial)",
       source_url: "https://github.com/jonatanrdsantos/elixir-inter-sdk",
       package: package(),
       deps: deps()
