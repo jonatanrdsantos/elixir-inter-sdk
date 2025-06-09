@@ -147,6 +147,27 @@ defmodule Inter.Client do
     }
   end
 
+  def list_cobrancas(%__MODULE__{} = client, conta_corrente) do
+    headers = [
+      {"Content-Type", "application/json"},
+      {"Authorization", "Bearer " <> client.token.access_token},
+      {"x-conta-corrente", conta_corrente}
+    ]
+
+    response =
+      HTTPoison.get(
+        client.base_url <> "cobranca/v3/cobrancas?dataInicial=2025-06-01&dataFinal=2025-06-09",
+        headers,
+        client.request_options
+      ) |> dbg()
+
+    %__MODULE__{
+      client
+      | request: %{},
+        response: handle_response(response, Inter.Cobranca.Charge.Response)
+    }
+  end
+
   def cobranca_charge(%__MODULE__{} = client, %Inter.Cobranca.Charge.Request{} = request) do
     headers = [
       {"Content-Type", "application/json"},

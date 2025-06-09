@@ -29,6 +29,10 @@ defmodule Inter do
     end
   end
 
+  def list_cobrancas(%Inter.Client{} = client, conta_corrente) do
+    client |> Inter.Client.token() |> Inter.Client.list_cobrancas(conta_corrente)
+  end
+
   def pix_qr_code(%Inter.Client{} = client) do
     case client.response do
       %Inter.Pix.Charge.Response{} = response ->
