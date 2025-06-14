@@ -9,7 +9,7 @@ defmodule Inter.MixProject do
       start_permanent: Mix.env() == :prod,
       name: "Inter",
       description: "Banco Inter SDK (unofficial)",
-      source_url: "https://github.com/jonatanrdsantos/elixir-inter-sdk",
+      source_url: "https://github.com/marmita-fit/inter-sdk",
       package: package(),
       deps: deps()
     ]
@@ -20,7 +20,7 @@ defmodule Inter.MixProject do
       licenses: ["MIT"],
       links: %{
         "Documentation" => "https://developers.inter.co/",
-        "GitHub" => "https://github.com/jonatanrdsantos/elixir-inter-sdk"
+        "GitHub" => "https://github.com/marmita-fit/inter-sdk"
       }
     ]
   end
@@ -44,7 +44,7 @@ defmodule Inter.MixProject do
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:mox, "~> 1.0", only: :dev}
       # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      # {:dep_from_git, git: "https://github.com/lang/my_dep.git", tag: "0.1.0"}
     ]
   end
 end

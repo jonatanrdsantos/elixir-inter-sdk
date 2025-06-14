@@ -1,4 +1,4 @@
-# Inter
+# Inter SDK
 
 This is a simple wrapper around the Banco Inter's API - a Brazilian digital banking.
 
