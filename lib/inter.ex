@@ -29,6 +29,16 @@ defmodule Inter do
     end
   end
 
+  def cobranca_charge(%Inter.Client{} = client, %Inter.Webhook.Request{} = request, type \\ :boleto) do
+    client
+    |> Inter.Client.token()
+    |> Inter.Client.create_webhook(request, type)
+  end
+
+  def get_webhook(%Inter.Client{} = client, %Inter.Webhook.Request{} = request, type \\ :boleto) do
+    client |> Inter.Client.token() |> Inter.Client.get_webhook(request, type)
+  end
+
   def pix_qr_code(%Inter.Client{} = client) do
     case client.response do
       %Inter.Pix.Charge.Response{} = response ->
