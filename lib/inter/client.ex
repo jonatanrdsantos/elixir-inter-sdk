@@ -169,6 +169,59 @@ defmodule Inter.Client do
     }
   end
 
+  def create_webhook(%__MODULE__{} = client, %Inter.Webhook.Request{} = request, type \\ :boleto) do
+    headers = [
+      {"Content-Type", "application/json"},
+      {"Authorization", "Bearer " <> client.token.access_token},
+      {"X-Conta-Corrente", request.contaCorrente}
+    ]
+
+    path = case type do
+      :boleto -> "cobranca/v3/cobrancas/webhook"
+      :pix -> "pix/v2/webhook/#{request.chavePix}"
+    end
+
+    response =
+      HTTPoison.put(
+        client.base_url <> path,
+        Poison.encode!(request |> Nestru.encode!()),
+        headers,
+        client.request_options
+      )
+
+    %__MODULE__{
+      client
+      | request: request,
+        response: handle_response(response, Inter.Webhook.Response)
+    }
+  end
+
+  def get_webhook(%__MODULE__{} = client, %Inter.Webhook.Request{} = request, type \\ :boleto) do
+    headers = [
+      {"Content-Type", "application/json"},
+      {"Authorization", "Bearer " <> client.token.access_token},
+      {"X-Conta-Corrente", request.contaCorrente}
+    ]
+
+    path = case type do
+      :boleto -> "cobranca/v3/cobrancas/webhook"
+      :pix -> "pix/v2/webhook/#{request.chavePix}"
+    end
+
+    response =
+      HTTPoison.get(
+        client.base_url <> path,
+        headers,
+        client.request_options
+      )
+
+    %__MODULE__{
+      client
+      | request: request,
+        response: handle_response(response, Inter.Webhook.Response)
+    }
+  end
+
   defp handle_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}, type),
     do: body |> Jason.decode!() |> Nestru.decode!(type)
 
