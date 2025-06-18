@@ -40,6 +40,7 @@ defmodule Inter.MixProject do
       {:httpoison, "~> 2.1"},
       {:nestru, "~> 1.0"},
       {:eqrcode, "~> 0.2"},
+      {:decimal, "~> 2.0"},
       {:calendar, "~> 1.0", only: :dev},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:mox, "~> 1.0", only: :dev}

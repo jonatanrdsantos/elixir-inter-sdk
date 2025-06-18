@@ -1,6 +1,8 @@
 defmodule Inter do
   alias QRCode.Generator
 
+  require Inter.Protocols
+
   @moduledoc """
   Documentation for `Inter`.
   """
