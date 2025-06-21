@@ -10,7 +10,7 @@ by adding `inter` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:inter, "~> 0.1.1"}
+    {:inter, "~> 0.6.0"}
   ]
 end
 ```
