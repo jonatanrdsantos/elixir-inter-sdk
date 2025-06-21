@@ -33,7 +33,11 @@ defmodule Inter.TokenManager do
     {:ok, %State{client: client, fetcher: fetcher}}
   end
 
-  def handle_call(:get_client, _from, %State{client: client, expires_at: expires_at, fetcher: fetcher} = state) do
+  def handle_call(
+        :get_client,
+        _from,
+        %State{client: client, expires_at: expires_at, fetcher: fetcher} = state
+      ) do
     if not_expired?(expires_at) do
       {:reply, client, state}
     else
@@ -60,7 +64,6 @@ defmodule Inter.TokenManager do
         {:noreply, %State{client: new_client, expires_at: expires_at}}
 
       {:error, _reason} ->
-        # Não atualiza, tenta novamente quando solicitado
         {:noreply, state}
     end
   end

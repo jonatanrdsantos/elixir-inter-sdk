@@ -91,15 +91,6 @@ defmodule Inter.Client do
     struct(__MODULE__, attrs)
   end
 
-  # def token(%__MODULE__{} = client) do
-  #   response = client |> fetch_token()
-
-  #   %__MODULE__{
-  #     client
-  #     | token: handle_response(response, Inter.Token)
-  #   }
-  # end
-
   def fetch_token(%__MODULE__{} = client) do
     data = [
       {"client_id", client.client_id},

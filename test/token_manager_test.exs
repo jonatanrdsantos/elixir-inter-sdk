@@ -6,6 +6,7 @@ defmodule Inter.TokenManagerTest do
   import Mox
 
   setup :set_mox_global
+
   setup do
     # Client "fake" para testar
     client = %Client{
@@ -31,7 +32,13 @@ defmodule Inter.TokenManagerTest do
     end)
 
     client = TokenManager.get_client()
-    assert client.token == %Inter.Token{access_token: "new_token", token_type: nil, expires_in: 3600, scope: nil}
+
+    assert client.token == %Inter.Token{
+             access_token: "new_token",
+             token_type: nil,
+             expires_in: 3600,
+             scope: nil
+           }
   end
 
   test "refreshes the token when expired", %{client: client} do
