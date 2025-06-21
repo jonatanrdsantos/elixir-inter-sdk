@@ -34,7 +34,6 @@ defmodule Inter.TokenManager do
   end
 
   def handle_call(:get_client, _from, %State{client: client, expires_at: expires_at, fetcher: fetcher} = state) do
-  # def handle_call(:get_client, _from, %State{client: client, expires_at: expires_at} = state) do
     if not_expired?(expires_at) do
       {:reply, client, state}
     else

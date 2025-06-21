@@ -39,10 +39,16 @@ defmodule Inter do
     |> Inter.Client.get_webhook(request, type)
   end
 
-  def pix_qr_code(%Inter.Pix.Charge.Response{} = response) do
-    %Inter.Pix.Charge.Response{
-      response
-      | qrCode: Generator.generate(response.pixCopiaECola, :svg)
-    }
+  def pix_qr_code(%Inter.Client{} = client) do
+    case client.response do
+      %Inter.Pix.Charge.Response{} = response ->
+        %Inter.Pix.Charge.Response{
+          client.response
+          | qrCode: Generator.generate(response.pixCopiaECola, :svg)
+        }
+
+      nil ->
+        nil
+    end
   end
 end
