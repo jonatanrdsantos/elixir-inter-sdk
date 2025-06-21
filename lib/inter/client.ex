@@ -3,17 +3,24 @@ defmodule Inter.Client do
   Documentation for `Inter.Client`.
   """
 
-  defstruct base_url: "https://cdpj.partners.bancointer.com.br/",
-            client_id: nil,
-            client_secret: nil,
-            scope: nil,
-            grant_type: "client_credentials",
-            cert_file: nil,
-            key_file: nil,
-            token: nil,
-            request: nil,
-            request_options: nil,
-            response: nil
+  defstruct [
+    :base_url,
+    :client_id,
+    :client_secret,
+    :scope,
+    :grant_type,
+    :cert_file,
+    :key_file,
+    :token,
+    :request,
+    :request_options,
+    :response
+  ]
+
+  @defaults %{
+    grant_type: "client_credentials",
+    base_url: "https://cdpj.partners.bancointer.com.br/"
+  }
 
   @doc """
   Build new client.
@@ -61,7 +68,30 @@ defmodule Inter.Client do
     }
   end
 
-  def token(%__MODULE__{} = client) do
+  def new(opts) when is_list(opts) do
+    opts = Enum.into(opts, %{})
+
+    {type, encoded, _atom} = opts.key_file |> :public_key.pem_decode() |> hd()
+    cert = opts.cert_file |> :public_key.pem_decode() |> hd() |> elem(1)
+
+    attrs =
+      @defaults
+      |> Map.merge(opts)
+      |> Map.merge(%{
+        request_options: [
+          recv_timeout: 30_000,
+          ssl: [
+            versions: [:"tlsv1.2"],
+            cert: cert,
+            key: {type, encoded}
+          ]
+        ]
+      })
+
+    struct(__MODULE__, attrs)
+  end
+
+  def fetch_token(%__MODULE__{} = client) do
     data = [
       {"client_id", client.client_id},
       {"client_secret", client.client_secret},
@@ -71,18 +101,13 @@ defmodule Inter.Client do
 
     headers = [{"Content-Type", "application/x-www-form-urlencoded"}]
 
-    response =
-      HTTPoison.post(
-        client.base_url <> "oauth/v2/token",
-        {:form, data},
-        headers,
-        client.request_options
-      )
-
-    %__MODULE__{
-      client
-      | token: handle_response(response, Inter.Token)
-    }
+    HTTPoison.post(
+      client.base_url <> "oauth/v2/token",
+      {:form, data},
+      headers,
+      client.request_options
+    )
+    |> handle_response(Inter.Token)
   end
 
   def pix_charge(%__MODULE__{} = client, %Inter.Pix.Charge.Request{} = request) do
@@ -99,11 +124,7 @@ defmodule Inter.Client do
         client.request_options
       )
 
-    %__MODULE__{
-      client
-      | request: request,
-        response: handle_response(response, Inter.Pix.Charge.Response)
-    }
+    handle_response(response, Inter.Pix.Charge.Response)
   end
 
   def get_pix(%__MODULE__{} = client, txid) do
@@ -166,6 +187,61 @@ defmodule Inter.Client do
       client
       | request: request,
         response: handle_response(response, Inter.Cobranca.Charge.Response.SimpleResponse)
+    }
+  end
+
+  def create_webhook(%__MODULE__{} = client, %Inter.Webhook.Request{} = request, type \\ :boleto) do
+    headers = [
+      {"Content-Type", "application/json"},
+      {"Authorization", "Bearer " <> client.token.access_token},
+      {"X-Conta-Corrente", request.contaCorrente}
+    ]
+
+    path =
+      case type do
+        :boleto -> "cobranca/v3/cobrancas/webhook"
+        :pix -> "pix/v2/webhook/#{request.chavePix}"
+      end
+
+    response =
+      HTTPoison.put(
+        client.base_url <> path,
+        Poison.encode!(request |> Nestru.encode!()),
+        headers,
+        client.request_options
+      )
+
+    %__MODULE__{
+      client
+      | request: request,
+        response: handle_response(response, Inter.Webhook.Response)
+    }
+  end
+
+  def get_webhook(%__MODULE__{} = client, %Inter.Webhook.Request{} = request, type \\ :boleto) do
+    headers = [
+      {"Content-Type", "application/json"},
+      {"Authorization", "Bearer " <> client.token.access_token},
+      {"X-Conta-Corrente", request.contaCorrente}
+    ]
+
+    path =
+      case type do
+        :boleto -> "cobranca/v3/cobrancas/webhook"
+        :pix -> "pix/v2/webhook/#{request.chavePix}"
+      end
+
+    response =
+      HTTPoison.get(
+        client.base_url <> path,
+        headers,
+        client.request_options
+      )
+
+    %__MODULE__{
+      client
+      | request: request,
+        response: handle_response(response, Inter.Webhook.Response)
     }
   end
 

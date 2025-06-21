@@ -1,5 +1,5 @@
-defmodule CobrancaTest do
-  use ExUnit.Case
+defmodule Integration.CobrancaTest do
+  use ExUnit.Case, async: false
 
   @valid_cobranca %Inter.Cobranca.Charge.Request{
     valorNominal: 100.50,
@@ -17,23 +17,29 @@ defmodule CobrancaTest do
     }
   }
 
+  setup do
+    # Inicializa o GenServer
+    client =
+      Inter.Client.new(
+        client_id: System.get_env("INTER_CLIENT_ID"),
+        client_secret: System.get_env("INTER_CLIENT_SECRET"),
+        scope: System.get_env("INTER_SCOPE"),
+        cert_file: System.get_env("INTER_API_CERT"),
+        key_file: System.get_env("INTER_API_KEY"),
+        base_url: "https://cdpj-sandbox.partners.uatinter.co/"
+      )
+
+    {:ok, _pid} = start_supervised({Inter.TokenManager, client})
+
+    {:ok, client: client}
+  end
+
   describe "charge_cobranca/2" do
     test "creates a cobranca with required parameters" do
-      client =
-        Inter.Client.new(
-          System.get_env("INTER_CLIENT_ID"),
-          System.get_env("INTER_CLIENT_SECRET"),
-          System.get_env("INTER_SCOPE"),
-          "client_credentials",
-          System.get_env("INTER_API_CERT"),
-          System.get_env("INTER_API_KEY"),
-          "https://cdpj-sandbox.partners.uatinter.co/"
-        )
-
       seu_numero = :crypto.strong_rand_bytes(3) |> Base.encode16() |> binary_part(0, 6)
       cobranca = %{@valid_cobranca | seuNumero: seu_numero}
 
-      result = client |> Inter.cobranca_charge(cobranca)
+      result = cobranca |> Inter.cobranca_charge()
 
       assert %Inter.Cobranca.Charge.Response.SimpleResponse{codigoSolicitacao: cod} =
                result.response
@@ -44,21 +50,10 @@ defmodule CobrancaTest do
 
   describe "get_cobranca/3" do
     setup do
-      client =
-        Inter.Client.new(
-          System.get_env("INTER_CLIENT_ID"),
-          System.get_env("INTER_CLIENT_SECRET"),
-          System.get_env("INTER_SCOPE"),
-          "client_credentials",
-          System.get_env("INTER_API_CERT"),
-          System.get_env("INTER_API_KEY"),
-          "https://cdpj-sandbox.partners.uatinter.co/"
-        )
-
       seu_numero = :crypto.strong_rand_bytes(3) |> Base.encode16() |> binary_part(0, 6)
       cobranca = %{@valid_cobranca | seuNumero: seu_numero}
 
-      result = client |> Inter.cobranca_charge(cobranca)
+      result = cobranca |> Inter.cobranca_charge()
 
       %Inter.Cobranca.Charge.Response.SimpleResponse{codigoSolicitacao: cod} = result.response
 
@@ -67,17 +62,6 @@ defmodule CobrancaTest do
 
     test "retrieves a cobranca", %{cod: cod, request: cobranca} do
       time = DateTime.utc_now() |> Calendar.strftime("%Y-%m-%d")
-
-      client =
-        Inter.Client.new(
-          System.get_env("INTER_CLIENT_ID"),
-          System.get_env("INTER_CLIENT_SECRET"),
-          System.get_env("INTER_SCOPE"),
-          "client_credentials",
-          System.get_env("INTER_API_CERT"),
-          System.get_env("INTER_API_KEY"),
-          "https://cdpj-sandbox.partners.uatinter.co/"
-        )
 
       # Bind values we want to compare to variables
       data_vencimento = cobranca.dataVencimento
@@ -90,7 +74,7 @@ defmodule CobrancaTest do
       pagador_tipo_pessoa = cobranca.pagador.tipoPessoa
       pagador_uf = cobranca.pagador.uf
 
-      result = client |> Inter.get_cobranca(cod, cobranca.contaCorrente)
+      result = cod |> Inter.get_cobranca(cobranca.contaCorrente)
 
       assert %Inter.Cobranca.Charge.Response{
                boleto: %{

@@ -15,6 +15,42 @@ def deps do
 end
 ```
 
+You can initialize this client by doing:
+
+```elixir
+# The preferable way:
+client = Inter.Client.new(client_id: client_id, client_secret: client_secret, scope: scope, api_cert: api_cert, api_key: api_key)
+
+# Or the other way
+client = Inter.Client.new(client_id, client_secret, scope, grant_type, api_cert, api_key)
+```
+
+You should use the GenServer to keep your token always fresh and avoid rate limiting.
+
+```elixir
+# lib/my_app/application.ex
+
+def start(_type, _args) do
+  children = [
+    # Other supervised gen servers, ex:
+    MyApp.Repo,
+    MyAppWeb.Endpoint,
+    # …
+    {Inter.TokenManager, %{
+      client: Inter.Client.new(
+        client_id: System.get_env("INTER_CLIENT_ID"),
+        client_secret: System.get_env("INTER_CLIENT_SECRET"),
+        scope: System.get_env("INTER_SCOPE"),
+        cert_file: System.get_env("INTER_API_CERT"),
+        key_file: System.get_env("INTER_API_KEY")
+      )
+    }}
+  ]
+
+  opts = [strategy: :one_for_one, name: MyApp.Supervisor]
+  Supervisor.start_link(children, opts)
+end
+```
 
 Usage:
 ```elixir
