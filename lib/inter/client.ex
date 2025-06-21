@@ -133,11 +133,7 @@ defmodule Inter.Client do
         client.request_options
       )
 
-    %__MODULE__{
-      client
-      | request: request,
-        response: handle_response(response, Inter.Pix.Charge.Response)
-    }
+    handle_response(response, Inter.Pix.Charge.Response)
   end
 
   def get_pix(%__MODULE__{} = client, txid) do
