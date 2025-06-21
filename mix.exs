@@ -43,7 +43,7 @@ defmodule Inter.MixProject do
       {:decimal, "~> 2.0"},
       {:calendar, "~> 1.0", only: :dev},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
-      {:mox, "~> 1.0", only: :dev}
+      {:mox, "~> 1.0", only: :test}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/lang/my_dep.git", tag: "0.1.0"}
     ]

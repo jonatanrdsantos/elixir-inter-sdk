@@ -4,18 +4,6 @@ defmodule PixTest do
   describe "get_pix/2" do
     @tag :skip
     test "receive the Inter.Pix.Charge.Response when the pix was found" do
-      # Setup test client
-      client =
-        Inter.Client.new(
-          System.get_env("INTER_CLIENT_ID"),
-          System.get_env("INTER_CLIENT_SECRET"),
-          "pix.read",
-          "client_credentials",
-          System.get_env("INTER_API_CERT"),
-          System.get_env("INTER_API_KEY"),
-          "https://cdpj-sandbox.partners.uatinter.co/"
-        )
-
       # Mock successful response
       expected_response = %Inter.Pix.Charge.Response{
         txid: "test_txid",
@@ -37,7 +25,7 @@ defmodule PixTest do
       # end)
 
       # Execute the function
-      result = Inter.get_pix(client, "test_txid")
+      result = Inter.get_pix("test_txid")
 
       # Assert the response
       assert result.response == expected_response
@@ -45,18 +33,7 @@ defmodule PixTest do
 
     @tag :skip
     test "receives a 404 when pix is not found" do
-      client =
-        Inter.Client.new(
-          System.get_env("INTER_CLIENT_ID"),
-          System.get_env("INTER_CLIENT_SECRET"),
-          "pix.read",
-          "client_credentials",
-          System.get_env("INTER_API_CERT"),
-          System.get_env("INTER_API_KEY"),
-          "https://cdpj-sandbox.partners.uatinter.co/"
-        )
-
-      result = Inter.get_pix(client, "invalid_txid")
+      result = Inter.get_pix("invalid_txid")
 
       assert result.response == %{}
     end
